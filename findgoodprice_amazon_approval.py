@@ -10,11 +10,11 @@ import datetime, time, os, re, win32com.client, shutil, telepot
 ###################################################################
 url_list = []
 diff = []
-Cur_price_column = 7
-Old_price_column = 8
-Cur_URL_column = 22
-Old_URL_column = 23
-Delivery_price_column = 9
+Cur_price_column = 8
+Old_price_column = 9
+Cur_URL_column = 23
+Old_URL_column = 24
+Delivery_price_column = 10
 row_number = 4
 item_numbers = 0
 sleep_time = 2
@@ -27,13 +27,14 @@ PATH = 'D:/01_MS_Work/02_Office/01_MS_Global/02_구매대행/'
 ###################################################################
 ### Log File 함수 ###
 def write_log(msg):
+    #print(msg)
     f = open(PATH + 'auto_aboard.log', 'a', encoding='UTF-8')
     f.write('[%s] %s\n' % (str(datetime.datetime.now()), msg))
 
 ### amazon 로그인 ####
 def login_amazon():
     AMAZON_ID='starrynig99@gmail.com'
-    AMAZON_PW='hw121325'
+    AMAZON_PW='tt121325??'
 
     ### 1. 아마존을 연다. https://www.amazon.com/-/us/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3Fref_%3Dnav_ya_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&
     try:
@@ -132,7 +133,7 @@ def login_mrrebates():
         driver.switch_to.window(driver.window_handles[1])
         #print(driver.title)
         
-        elem = WebDriverWait(driver, 60*5).until(EC.presence_of_element_located((By.XPATH, '//a[@class="p_a p_ao p_v p_af aa_c"][@title="Walmart Homepage"]')))
+        elem = WebDriverWait(driver, 60*2).until(EC.presence_of_element_located((By.XPATH, '//a[@class="g_a s_a g_c l_a"][@title="Walmart Homepage"]')))
         #print("login_mrrebates - move Walmart!!!")
 
     except Exception as e:
@@ -179,22 +180,20 @@ try:
             #ws.Cells(i, Old_URL_column).Value = ws.Cells(i, Cur_URL_column).Value
             ws.Cells(i, Cur_price_column).Value = ''
             #ws.Cells(i, Cur_URL_column).Value = ''
-
+    
     ### walmart인 경우 우회하기 위해 하기 사이트를 이용 ####
     login_mrrebates()
-
+    
     ### url list의 크기 만큼 크롬에서 url을 검색 - Walmart 만 검색
     for url in url_list:
-        
         if 'walmart' in url:
             #driver.switch_to.window(driver.window_handles[2])
             write_log("Walmart web site !!")
-
             driver.get(url)
             write_log(url)
 
             try: ### 가격이 priceblock_ourprice / priceblock_dealprice / priceblock_saleprice 3곳중 한 곳에 표기 되어서, 하기와 같이 최소 1회/최대 3회 체크
-                elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//span[@id="price"]/div/span[@class="hide-content display-inline-block-m"]/span/span[@class="visuallyhidden"]')))
+                elem = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//span[@id="price"]/div/span[@class="hide-content display-inline-block-m"]/span/span[@class="visuallyhidden"]')))
         
                 item_price = elem.text.replace(',', '')
                 item_price = item_price.replace('$', '')
@@ -210,7 +209,7 @@ try:
                 item_price = 0 ### 가격 정보를 찾지 못했을 때, 가격을 0으로 초기화
 
             finally:
-                print(item_price)
+                write_log(item_price)
 
                 
             if ws.Cells(row_number, Old_price_column).Value != item_price:
@@ -236,6 +235,7 @@ try:
     options.add_argument("disable-gpu")
 
     driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
+    #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
 
     ### Amazon prime 가격을 얻기 위해 Log in을 실시 ###
     login_amazon()
@@ -272,7 +272,7 @@ try:
 
             except Exception as e:
                 try:
-                    elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@id="priceblock_dealprice"]')))
+                    elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-offscreen"]')))
                     item_price = elem.text.replace(',', '')
                     item_price = item_price.replace('$', '')
                     
@@ -282,7 +282,7 @@ try:
 
                 except Exception as e:
                     try:
-                        elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@id="priceblock_saleprice"]')))
+                        elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price a-text-price a-size-medium apexPriceToPay"]')))
                         item_price = elem.text.replace(',', '')
                         item_price = item_price.replace('$', '')
                         
@@ -291,9 +291,33 @@ try:
                         ws.Cells(row_number, Cur_price_column).Value = item_price
 
                     except Exception as e:
-                        item_price = 0 ### 가격 정보를 찾지 못했을 때, 가격을 0으로 초기화
-                        write_log(e)
-                        write_log("Amazon Error!!!")
+                        try:
+                            elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@id="priceblock_saleprice"]')))
+                            item_price = elem.text.replace(',', '')
+                            item_price = item_price.replace('$', '')
+                            
+                            item_price = float(item_price) ## 달러는 float 타입
+                            
+                            ws.Cells(row_number, Cur_price_column).Value = item_price
+
+                        except Exception as e:
+                            try:
+                                elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@id="priceblock_dealprice"]')))
+                                item_price = elem.text.replace(',', '')
+                                item_price = item_price.replace('$', '')
+                                
+                                item_price = float(item_price) ## 달러는 float 타입
+                                
+                                ws.Cells(row_number, Cur_price_column).Value = item_price
+
+                            except Exception as e:
+                                item_price = 0 ### 가격 정보를 찾지 못했을 때, 가격을 0으로 초기화
+                                write_log(e)
+                                write_log("Amazon Error!!!")
+
+                        finally:
+                            e = None
+                            del e
                     
                     finally:
                         e = None
@@ -304,8 +328,11 @@ try:
                     del e
 
             finally:
-                print(item_price)
-
+                write_log(item_price)
+                ### Debug
+                #print(item_price)
+                #input()
+                
             ### 기타 사이트 경우 ####
         else:
             write_log("This web site is other site !!")
@@ -328,7 +355,7 @@ try:
         
 except Exception as e:
     write_log(e)
-    print("Program Error!!!")
+    write_log("Program Error!!!")
 
 finally:
     driver.close()
@@ -357,4 +384,4 @@ date = str(datetime.date.today())
 New_Excel_PATH = PATH + File_Name + '_' + date + File_extension
 shutil.copy(Excel_PATH, New_Excel_PATH)
 
-print("Done !!!")
+write_log("Done !!!")
