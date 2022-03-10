@@ -20,7 +20,8 @@ item_numbers = 0
 sleep_time = 2
 Cur_item_name_column = 3
 
-PATH = 'D:/01_MS_Work/02_Office/01_MS_Global/02_구매대행/'
+#PATH = 'D:/01_MS_Work/02_Office/01_MS_Global/02_구매대행/'
+PATH = 'D:/02_MS/01_MS_Work/02_Office/01_MS_Global/02_구매대행/'
 
 ###################################################################
 #   Working Directory
@@ -38,7 +39,7 @@ def login_amazon():
 
     ### 1. 아마존을 연다. https://www.amazon.com/-/us/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3Fref_%3Dnav_ya_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&
     try:
-        driver.get('https://www.amazon.com/-/us/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3Fref_%3Dnav_ya_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&')
+        driver.get('https://www.amazon.com/-/ko/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3Fref_%3Dnav_custrec_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&')
 
     ### 2. ID 창을 찾아서 선택 후 ID 입력
         elem = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//input[@type="email"]')))
@@ -152,8 +153,8 @@ options.add_argument("disable-gpu") """
 
 ### 크롬 드라이버 설정 - walmart는 headless 모드 지원하지 않으므로 Option 없이 Chrome 실행)
 #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
-driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
-
+#driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
+driver = webdriver.Chrome('D:/02_MS/02_Study/01_Python/01_Code/02_Auto/chromedriver')
 
 ### Main 함수 Start ####
 
@@ -182,10 +183,10 @@ try:
             #ws.Cells(i, Cur_URL_column).Value = ''
     
     ### walmart인 경우 우회하기 위해 하기 사이트를 이용 ####
-    login_mrrebates()
+    #login_mrrebates()
     
     ### url list의 크기 만큼 크롬에서 url을 검색 - Walmart 만 검색
-    for url in url_list:
+    """ for url in url_list:
         if 'walmart' in url:
             #driver.switch_to.window(driver.window_handles[2])
             write_log("Walmart web site !!")
@@ -218,15 +219,15 @@ try:
                 #print("Old : ", old_price, "New : ", item_price)
                 diff.append((row_number-3, ws.Cells(row_number, Cur_item_name_column).Value, ws.Cells(row_number, Old_price_column).Value, item_price))
 
-        row_number += 1
+        row_number += 1 """
         #time.sleep(1)
 
     row_number = 4
 
     ### Walmart에서 사용하던 Driver를 닫고 새로운 Driver로 시작
-    driver.close()
+    """ driver.close()
     driver.switch_to.window(driver.window_handles[0])
-    driver.quit()
+    driver.quit() """
     
     ### 크롬 드라이버 설정 - Amazon 등 기타 웹사이트는 headless 모드 지원하므로 Option 설정 후 Chrome 실행)
     options = webdriver.ChromeOptions()
@@ -234,7 +235,9 @@ try:
     options.add_argument('window-size=1920x1080')
     options.add_argument("disable-gpu")
 
-    driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
+    driver = webdriver.Chrome('D:/02_MS/02_Study/01_Python/01_Code/02_Auto/chromedriver')
+
+    #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
     #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
 
     ### Amazon prime 가격을 얻기 위해 Log in을 실시 ###
@@ -262,63 +265,49 @@ try:
             write_log(url)
         
             try: ### 가격이 priceblock_ourprice / priceblock_dealprice / priceblock_saleprice 3곳중 한 곳에 표기 되어서, 하기와 같이 최소 1회/최대 3회 체크
-                elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//span[@id="priceblock_ourprice"]')))
+                elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price aok-align-center reinventPricePriceToPayPadding priceToPay"]/span[@class="a-offscreen"]')))
                 item_price = elem.text.replace(',', '')
                 item_price = item_price.replace('$', '')
                 
                 item_price = float(item_price) ## 달러는 float 타입
-                
+     
                 ws.Cells(row_number, Cur_price_column).Value = item_price
 
             except Exception as e:
                 try:
-                    elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-offscreen"]')))
+                    elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price a-text-price a-size-medium apexPriceToPay"]')))
                     item_price = elem.text.replace(',', '')
                     item_price = item_price.replace('$', '')
                     
                     item_price = float(item_price) ## 달러는 float 타입
-                    
+                 
                     ws.Cells(row_number, Cur_price_column).Value = item_price
 
                 except Exception as e:
                     try:
-                        elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price a-text-price a-size-medium apexPriceToPay"]')))
+                        elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@id="priceblock_saleprice"]')))
                         item_price = elem.text.replace(',', '')
                         item_price = item_price.replace('$', '')
                         
                         item_price = float(item_price) ## 달러는 float 타입
-                        
+
                         ws.Cells(row_number, Cur_price_column).Value = item_price
 
                     except Exception as e:
                         try:
-                            elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@id="priceblock_saleprice"]')))
+                            elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//div[@class="a-section a-spacing-micro"]/span[@class="a-price aok-align-center"]/span[@class="a-offscreen"]')))
                             item_price = elem.text.replace(',', '')
                             item_price = item_price.replace('$', '')
                             
                             item_price = float(item_price) ## 달러는 float 타입
-                            
+
                             ws.Cells(row_number, Cur_price_column).Value = item_price
 
                         except Exception as e:
-                            try:
-                                elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@id="priceblock_dealprice"]')))
-                                item_price = elem.text.replace(',', '')
-                                item_price = item_price.replace('$', '')
-                                
-                                item_price = float(item_price) ## 달러는 float 타입
-                                
-                                ws.Cells(row_number, Cur_price_column).Value = item_price
+                            item_price = 0 ### 가격 정보를 찾지 못했을 때, 가격을 0으로 초기화
+                            write_log(e)
+                            write_log("Amazon Error!!!")
 
-                            except Exception as e:
-                                item_price = 0 ### 가격 정보를 찾지 못했을 때, 가격을 0으로 초기화
-                                write_log(e)
-                                write_log("Amazon Error!!!")
-
-                        finally:
-                            e = None
-                            del e
-                    
                     finally:
                         e = None
                         del e
