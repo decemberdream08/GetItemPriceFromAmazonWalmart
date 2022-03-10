@@ -21,7 +21,8 @@ sleep_time = 2
 Cur_item_name_column = 3
 
 #PATH = 'D:/01_MS_Work/02_Office/01_MS_Global/02_구매대행/'
-PATH = 'D:/02_MS/01_MS_Work/02_Office/01_MS_Global/02_구매대행/'
+PATH = 'N:/. Personal_folder/01_MS_Work/02_Office/01_MS_Global/02_구매대행'
+
 
 ###################################################################
 #   Working Directory
@@ -154,7 +155,7 @@ options.add_argument("disable-gpu") """
 ### 크롬 드라이버 설정 - walmart는 headless 모드 지원하지 않으므로 Option 없이 Chrome 실행)
 #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
 #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
-driver = webdriver.Chrome('D:/02_MS/02_Study/01_Python/01_Code/02_Auto/chromedriver')
+driver = webdriver.Chrome('N:/. Personal_folder/03_Study/01_Python/01_Code/02_Auto/chromedriver')
 
 ### Main 함수 Start ####
 
@@ -235,7 +236,8 @@ try:
     options.add_argument('window-size=1920x1080')
     options.add_argument("disable-gpu")
 
-    driver = webdriver.Chrome('D:/02_MS/02_Study/01_Python/01_Code/02_Auto/chromedriver')
+    driver = webdriver.Chrome('N:/. Personal_folder/03_Study/01_Python/01_Code/02_Auto/chromedriver')
+    #driver = webdriver.Chrome('D:/02_MS/02_Study/01_Python/01_Code/02_Auto/chromedriver')
 
     #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
     #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
