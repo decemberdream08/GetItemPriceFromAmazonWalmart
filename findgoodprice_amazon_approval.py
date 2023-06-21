@@ -145,17 +145,6 @@ def login_mrrebates():
         write_log("Exit login_mrrebates()")
 
 
-### 크롬 드라이버 설정
-""" options = webdriver.ChromeOptions()
-options.add_argument('headless')
-options.add_argument('window-size=1920x1080')
-options.add_argument("disable-gpu") """
-
-### 크롬 드라이버 설정 - walmart는 headless 모드 지원하지 않으므로 Option 없이 Chrome 실행)
-#driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
-#driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
-#driver = webdriver.Chrome('D:/02_MS/02_Study/01_Python/01_Code/02_Auto/chromedriver')
-
 ### Main 함수 Start ####
 
 try:
@@ -182,6 +171,17 @@ try:
             ws.Cells(i, Cur_price_column).Value = ''
             #ws.Cells(i, Cur_URL_column).Value = ''
     
+    ### 크롬 드라이버 설정
+    """ options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    options.add_argument('window-size=1920x1080')
+    options.add_argument("disable-gpu") """
+
+    ### 크롬 드라이버 설정 - walmart는 headless 모드 지원하지 않으므로 Option 없이 Chrome 실행)
+    #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
+    #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
+    #driver = webdriver.Chrome('D:/02_MS/02_Study/01_Python/01_Code/02_Auto/chromedriver')
+
     ### walmart인 경우 우회하기 위해 하기 사이트를 이용 ####
     #login_mrrebates()
     
@@ -237,8 +237,8 @@ try:
 
     #driver = webdriver.Chrome('D:/02_MS/02_Study/01_Python/01_Code/02_Auto/chromedriver')
 
-    driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
-    #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
+    #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
+    driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
 
     ### Amazon prime 가격을 얻기 위해 Log in을 실시 ###
     login_amazon()
@@ -265,8 +265,8 @@ try:
             write_log(url)
         
             try: ### 가격이 priceblock_ourprice / priceblock_dealprice / priceblock_saleprice 3곳중 한 곳에 표기 되어서, 하기와 같이 최소 1회/최대 3회 체크
-                #elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price aok-align-center reinventPricePriceToPayPadding priceToPay"]')))
-                elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price aok-align-center"]')))
+                elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price aok-align-center reinventPricePriceToPayMargin priceToPay"]')))
+                #elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-offscreen"]')))
                 
                 item_price = elem.text.replace('\n', '.')
                 item_price = item_price.replace('$', '')
@@ -274,10 +274,11 @@ try:
                 item_price = float(item_price) ## 달러는 float 타입
                 
                 ws.Cells(row_number, Cur_price_column).Value = item_price
-
+                write_log("Amazon - 1")
             except Exception as e:
                 try:
                     elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price a-text-price a-size-medium apexPriceToPay"]')))
+                    #elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price aok-align-center"]')))
                     
                     item_price = elem.text.replace(',', '')
                     item_price = item_price.replace('$', '')
@@ -285,10 +286,10 @@ try:
                     item_price = float(item_price) ## 달러는 float 타입
                     
                     ws.Cells(row_number, Cur_price_column).Value = item_price
-
+                    write_log("Amazon - 2")
                 except Exception as e:
                     try:
-                        elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@id="priceblock_saleprice"]')))
+                        elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//span[@id="priceblock_saleprice"]')))
                         
                         item_price = elem.text.replace(',', '')
                         item_price = item_price.replace('$', '')
@@ -296,10 +297,10 @@ try:
                         item_price = float(item_price) ## 달러는 float 타입
                         
                         ws.Cells(row_number, Cur_price_column).Value = item_price
-
+                        write_log("Amazon - 3")
                     except Exception as e:
                         try:
-                            elem = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price aok-align-center"]')))
+                            elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//span[@class="a-price aok-align-center"]')))
                             
                             item_price = elem.text.replace('\n', '.')
                             item_price = item_price.replace('$', '')
@@ -307,7 +308,7 @@ try:
                             item_price = float(item_price) ## 달러는 float 타입
                            
                             ws.Cells(row_number, Cur_price_column).Value = item_price
-
+                            write_log("Amazon - 4")
                         except Exception as e:
                             item_price = 0 ### 가격 정보를 찾지 못했을 때, 가격을 0으로 초기화
                             write_log(e)
