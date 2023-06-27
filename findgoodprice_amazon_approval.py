@@ -102,7 +102,7 @@ def login_amazon():
     write_log('아마존 log in 성공')
     
 
-def login_mrrebates():
+''' def login_mrrebates():
     mrrebates_ID='decemberdream08@gmail.com'
     mrrebates_PW='tt64097578'
     driver.get('https://www.mrrebates.com/merchant.asp?id=9678')
@@ -142,7 +142,7 @@ def login_mrrebates():
         #print("login_mrrebates() : Error!!!") # walmart는 로봇인지를 가끔 체크하여 Error 발생 !!!
 
     finally:
-        write_log("Exit login_mrrebates()")
+        write_log("Exit login_mrrebates()") '''
 
 
 ### Main 함수 Start ####
@@ -172,31 +172,39 @@ try:
             #ws.Cells(i, Cur_URL_column).Value = ''
     
     ### 크롬 드라이버 설정
-    """ options = webdriver.ChromeOptions()
-    options.add_argument('headless')
+    options = webdriver.ChromeOptions()
+    options.add_argument("start-maximized")
+    options.add_argument('--disable-blink-features=AutomationControlled')
+    
+    ''' options.add_argument('headless')
     options.add_argument('window-size=1920x1080')
-    options.add_argument("disable-gpu") """
+    options.add_argument("disable-gpu") '''
 
     ### 크롬 드라이버 설정 - walmart는 headless 모드 지원하지 않으므로 Option 없이 Chrome 실행)
-    #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
+    driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
     #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
     #driver = webdriver.Chrome('D:/02_MS/02_Study/01_Python/01_Code/02_Auto/chromedriver')
 
     ### walmart인 경우 우회하기 위해 하기 사이트를 이용 ####
     #login_mrrebates()
+    driver.get("https://www.walmart.com/")
     
     ### url list의 크기 만큼 크롬에서 url을 검색 - Walmart 만 검색
-    """ for url in url_list:
+    for url in url_list:
         if 'walmart' in url:
             #driver.switch_to.window(driver.window_handles[2])
             write_log("Walmart web site !!")
+            #print("Walmart web site !!")
             driver.get(url)
             write_log(url)
+            #print(url)
 
             try: ### 가격이 priceblock_ourprice / priceblock_dealprice / priceblock_saleprice 3곳중 한 곳에 표기 되어서, 하기와 같이 최소 1회/최대 3회 체크
-                elem = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//span[@id="price"]/div/span[@class="hide-content display-inline-block-m"]/span/span[@class="visuallyhidden"]')))
-        
+                ##elem = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//span[@id="price"]/div/span[@class="hide-content display-inline-block-m"]/span/span[@class="visuallyhidden"]')))
+                elem = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//span[@class="inline-flex flex-column"]/span[@itemprop="price"]')))
+                
                 item_price = elem.text.replace(',', '')
+                item_price = item_price.replace('Now','')
                 item_price = item_price.replace('$', '')
                 item_price = float(item_price) ## 달러는 float 타입
                                         
@@ -205,12 +213,13 @@ try:
             except Exception as e:
                 write_log(e)
                 write_log("Walmart web Error!!!") # walmart는 로봇인지를 가끔 체크하여 Error 발생 !!!
-
+                #print("Walmart web Error!!!")
                 ### 가격 정보를 찾지 못했을 때, 현재 가격은 기존 가격으로 설정
                 item_price = 0 ### 가격 정보를 찾지 못했을 때, 가격을 0으로 초기화
 
             finally:
                 write_log(item_price)
+                #print(item_price)
 
                 
             if ws.Cells(row_number, Old_price_column).Value != item_price:
@@ -219,24 +228,23 @@ try:
                 #print("Old : ", old_price, "New : ", item_price)
                 diff.append((row_number-3, ws.Cells(row_number, Cur_item_name_column).Value, ws.Cells(row_number, Old_price_column).Value, item_price))
 
-        row_number += 1 """
+        row_number += 1
         #time.sleep(1)
 
     row_number = 4
 
     ### Walmart에서 사용하던 Driver를 닫고 새로운 Driver로 시작
-    """ driver.close()
-    driver.switch_to.window(driver.window_handles[0])
-    driver.quit() """
+    driver.close()
+    #driver.switch_to.window(driver.window_handles[0])
+    driver.quit()
     
     ### 크롬 드라이버 설정 - Amazon 등 기타 웹사이트는 headless 모드 지원하므로 Option 설정 후 Chrome 실행)
-    options = webdriver.ChromeOptions()
+    ''' options = webdriver.ChromeOptions()
     options.add_argument('headless')
     options.add_argument('window-size=1920x1080')
-    options.add_argument("disable-gpu")
+    options.add_argument("disable-gpu") '''
 
     #driver = webdriver.Chrome('D:/02_MS/02_Study/01_Python/01_Code/02_Auto/chromedriver')
-
     #driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver', options=options)
     driver = webdriver.Chrome('D:/03_Study/01_Python/01_Code/02_Auto/chromedriver')
 
